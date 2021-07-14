@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TopContactsAPI.Data;
+using TopContactsAPI.Extensions;
 using TopContactsAPI.Model;
 using TopContactsAPI.V1.Dto;
 
@@ -39,6 +40,8 @@ namespace TopContactsAPI.V1.Controllers
         [HttpPost("Create")]
         public IActionResult Create(ContactDto model)
         {
+            model.Id = ContactExtensions.GenerateNewId();
+
             var contact = _mapper.Map<Contact>(model);
 
             _repository.Create(contact);
@@ -46,7 +49,48 @@ namespace TopContactsAPI.V1.Controllers
             if (_repository.SaveChanges())
                 return Created($"/api/contact/{model.Id}", _mapper.Map<ContactDto>(contact));
             else
-                return BadRequest("Sorry, Something went wrong when registering a new contact... :(");
+                return BadRequest("Sorry, something went wrong when registering a new contact... :(");
+        }
+
+        /// <summary>
+        /// Update a existent Contact
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("Update")]
+        public IActionResult Update(ContactDto model)
+        {
+            var contact = _repository.GetContactById(model.Id);
+
+            if (contact is null)
+                return BadRequest($"Sorry T_T, contact not found to id: {model.Id}");
+
+            _mapper.Map(model, contact);
+
+            _repository.Update(contact);
+
+            if (_repository.SaveChanges())
+                return Created($"/api/contact/{model.Id}", _mapper.Map<ContactDto>(contact));
+            else
+                return BadRequest("Sorry, something went wrong while updating a contact... :(");
+        }
+
+        /// <summary>
+        /// Delete a existent Contact
+        /// </summary>
+        [HttpDelete("Delete/{id}")]
+        public IActionResult Delete(Guid id)
+        {
+            var contact = _repository.GetContactById(id);
+
+            if (contact is null)
+                return BadRequest($"Sorry T_T, contact not found to id: {id}");
+
+            _repository.Delete(contact);
+
+            if (_repository.SaveChanges())
+                return Ok(contact);
+            else
+                return BadRequest("Sorry, something went wrong while updating a contact... :(");
         }
 
         /// <summary>

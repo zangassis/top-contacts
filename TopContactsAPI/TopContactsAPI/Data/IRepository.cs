@@ -19,5 +19,7 @@ namespace TopContactsAPI.Data
         Contact[] GetAllContacts();
 
         Task<Contact[]> GetAllContactsByProfileIdAsync(Guid id);
+
+        Contact GetContactById(Guid contactId);
     }
 }

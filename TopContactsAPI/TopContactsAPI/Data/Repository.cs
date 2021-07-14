@@ -56,5 +56,14 @@ namespace TopContactsAPI.Data
 
             return query.ToArrayAsync();
         }
+
+        public Contact GetContactById(Guid contactId)
+        {
+            IQueryable<Contact> query = _context.Contacts;
+
+            query = query.AsNoTracking().OrderBy(c => c.Id).Where(contact => contact.Id == contactId);
+
+            return query.FirstOrDefault();
+        }
     }
 }

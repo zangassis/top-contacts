@@ -34,15 +34,9 @@ namespace TopContactsAPI.Model
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public bool Favorite { get; set; }
+        public bool Favorite { get; set; } = true;
 
         [ForeignKey("FK_Profile")]
         public Guid ProfileId { get; set; }
-
-        public void ResetId()
-        {
-            this.Id = Guid.NewGuid();
-        }
-
     }
 }
